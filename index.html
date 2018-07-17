@@ -9,10 +9,17 @@
 <body>
     <canvas id="c"></canvas>
     <script id="vertex_shader" type="x-shader/x-vertex">
-        attribute vec4 a_position;
+        attribute vec2 a_position;
+        attribute vec2 a_resolution;
+        
  
-        void main() {
+        void main() {  
+            mat2 translation_matrix = mat2(
+                a_resolution[0], 0,
+                0, a_resolution[1]
+            ); 
             gl_Position = a_position;
+            
         }        
     </script>
     <script id="fragment_shader" type="x-shader/x-fragment">

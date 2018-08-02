@@ -1,3 +1,8 @@
+var mouseY;
+var mouseX;
+var animation = true;
+
+
 function createShader(gl, type, source) {
     var shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -44,9 +49,22 @@ function createProgram(gl, vertexShader, fragmentShader) {
     gl.deleteProgram(program);
 }
 
+function setRectangle(gl, x,y,h,w) {
+    var positions = [
+        x, y,
+        x+w, y,
+        x, y+h,
+        x+w, y,
+        x+w, y+h,
+        x, y+h
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+}
+
 function main() {
     // Get A WebGL context
     var canvas = document.getElementById("c");
+    canvas.addEventListener("mousemove", function(e) {mouseX = e.clientX; mouseY = e.clientY}); 
     var gl = canvas.getContext("webgl");
     if (!gl) {
         return;
@@ -65,6 +83,8 @@ function main() {
 
     // look up where the vertex data needs to go.
     var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+    var resolutionUniformLocation = gl.getUniformLocation(program, "a_resolution");
+    var colorUniformLocation = gl.getUniformLocation(program, "a_color");
 
     // Create a buffer and put three 2d clip space points in it
     var positionBuffer = gl.createBuffer();
@@ -72,13 +92,6 @@ function main() {
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    var positions = [
-        0, 0,
-        0, 0.7,
-        0.7, 0,
-        0.7, 0.7
-    ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     // code above this line is initialization code.
     // code below this line is rendering code.
@@ -94,6 +107,7 @@ function main() {
 
     // Tell it to use our program (pair of shaders)
     gl.useProgram(program);
+    gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
     // Turn on the attribute
     gl.enableVertexAttribArray(positionAttributeLocation);
@@ -108,11 +122,21 @@ function main() {
         positionAttributeLocation, size, type, normalize, stride, offset)
 
     // draw
-    var primitiveType = gl.TRIANGLES;
-    var offset = 0;
-    var count = 3;
-    gl.drawArrays(primitiveType, offset, count);
+    for (var i=0; i<50; i++) {
+        setRectangle(gl, Math.random()*300,Math.random()*300,Math.random()*300,Math.random()*300);
+        gl.uniform4f(colorUniformLocation, Math.random(),Math.random(),Math.random(), 1);
+        gl.drawArrays(gl.TRIANGLES,0,6);
+    }
+}
 
+function animate() {
+    if (!animation) return;
+    while (true) {
+       // console.log(mouseX, mouseY);
+    }
+    
+   
 }
 
 main();
+animate();

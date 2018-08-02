@@ -10,23 +10,27 @@
     <canvas id="c"></canvas>
     <script id="vertex_shader" type="x-shader/x-vertex">
         attribute vec2 a_position;
-        attribute vec2 a_resolution;
+        uniform vec2 a_resolution;
         
  
         void main() {  
-            mat2 translation_matrix = mat2(
-                a_resolution[0], 0,
-                0, a_resolution[1]
+            mat2 t_m = mat2(
+                2.0 /a_resolution[0], 0.0,
+                0.0, - 2.0 /a_resolution[1]
             ); 
-            gl_Position = a_position;
+            vec2 t_pos = t_m*a_position;
+            vec2 t_pos_mov = t_pos - vec2(1.0, - 1.0);
+            gl_Position = vec4(t_pos_mov, 0,1);
             
         }        
     </script>
     <script id="fragment_shader" type="x-shader/x-fragment">
         precision mediump float;
+
+        uniform vec4 a_color;
  
         void main() {
-             gl_FragColor = vec4(1, 0, 0.5, 1); // return redish-purple
+             gl_FragColor = a_color;
         }
     </script>
     <script src="main.js"></script>
